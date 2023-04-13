@@ -1,6 +1,10 @@
 package repository
 
-import "abrigos/source/domain/entities"
+import (
+	"abrigos/source/domain/entities"
+
+	"gorm.io/gorm"
+)
 
 func FindUsers(tx ...*TransactionalOperation) ([]entities.User, error) {
 	users := []entities.User{}
@@ -21,10 +25,17 @@ func CreateUser(user *entities.User, tx ...*TransactionalOperation) error {
 	return WithTransaction(tx).Create(user).Error
 }
 
-func UpdateUser() {
+func UpdateUser(user *entities.User, tx ...*TransactionalOperation) error {
+	return WithTransaction(tx).Model(&entities.User{}).Updates(user).Error
 
 }
 
-func DeleteUser() {
+func DeleteUser(id int, tx ...*TransactionalOperation) error {
+	dbResult := WithTransaction(tx).Delete(entities.User{Model: gorm.Model{ID: uint(id)}})
 
+	if dbResult.RowsAffected < 1 {
+		return gorm.ErrRecordNotFound
+	}
+
+	return dbResult.Error
 }
