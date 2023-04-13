@@ -9,7 +9,7 @@ import (
 func AutoMigrate() {
 
 	db.AutoMigrate(entities.RetriveAll()...)
-	InsertBaseUsers()
+	// InsertBaseUsers()
 }
 
 func DropAll() {

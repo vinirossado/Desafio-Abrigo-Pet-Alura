@@ -92,9 +92,19 @@ func LoginHandler(c *gin.Context) (interface{}, error) {
 		return nil, jwt.ErrFailedAuthentication
 	}
 
-	if err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(auth.Password)); err != nil {
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(auth.Password), bcrypt.DefaultCost)
+
+	if err != nil {
+		return nil, err
+	}
+
+	if string(hashedPassword) == user.Password {
 		return nil, jwt.ErrFailedAuthentication
 	}
+
+	// if err = bcrypt.CompareHashAndPassword(hashedPassword, []byte(user.Password)); err != nil {
+	// 	return nil, jwt.ErrFailedAuthentication
+	// }
 
 	return &Claims{
 		Name: user.Name,

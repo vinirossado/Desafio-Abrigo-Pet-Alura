@@ -10,7 +10,6 @@ func InitRouter() *gin.Engine {
 	router := gin.New()
 	// bindSwagger(router)
 	bindMiddlewares(router)
-
 	bindActuatorsRoutes(router)
 	bindUserRoutes(router)
 
