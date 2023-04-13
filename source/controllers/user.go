@@ -10,7 +10,8 @@ import (
 )
 
 func FindUsers(c *gin.Context) {
-
+	users := service.FindUsers()
+	c.JSON(http.StatusOK, users)
 }
 
 func FindUserById(c *gin.Context) {
