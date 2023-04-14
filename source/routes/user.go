@@ -11,12 +11,12 @@ import (
 func bindUserRoutes(router *gin.Engine) {
 
 	users := router.Group("/tutors")
-	users.Use(middleware.JwtMiddleware().MiddlewareFunc())
 
+	users.POST("", controllers.CreateUser)
+
+	users.Use(middleware.JwtMiddleware().MiddlewareFunc())
 	users.GET("", middleware.AuthorizationMiddleware(enumerations.NORMAL), controllers.FindUsers)
 	users.GET("/:id", middleware.AuthorizationMiddleware(enumerations.NORMAL), controllers.FindUserById)
-	users.POST("", controllers.CreateUser)
-	users.PUT("/:id", middleware.AuthorizationMiddleware(enumerations.SUPERVISOR), controllers.UpdateUser)
-	users.PATCH("/:id", middleware.AuthorizationMiddleware(enumerations.ADMIN), controllers.DeleteUser)
-
+	users.PUT("/:id", middleware.AuthorizationMiddleware(enumerations.NORMAL), controllers.UpdateUser)
+	users.PATCH("/:id", middleware.AuthorizationMiddleware(enumerations.NORMAL), controllers.DeleteUser)
 }

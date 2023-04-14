@@ -43,19 +43,37 @@ func FindUserById(id int) *responses.UserResponse {
 
 func CreateUser(request *request.UserRequest) {
 
-	hash, err := bcrypt.GenerateFromPassword([]byte(request.Password), bcrypt.DefaultCost)
+	repository.UsingTransactional(func(tx *repository.TransactionalOperation) error {
+		exists := repository.ExistsUserByUsername(request.Username)
 
-	if err != nil {
-		// Tratar erro
-	}
+		if exists {
+			return exception.BadRequestException(
+				fmt.Sprintf("Username %s already exists", request.Username),
+			)
+		}
 
-	user := entities.User{
-		Name:     request.Name,
-		Username: request.Username,
-		Password: string(hash),
-		Role:     request.Role,
-	}
-	repository.CreateUser(&user)
+		hash, _ := bcrypt.GenerateFromPassword([]byte(request.Password), bcrypt.DefaultCost)
+
+		user := entities.User{
+			Name:     request.Name,
+			Username: request.Username,
+			Password: string(hash),
+			Role:     request.Role,
+			Email:    request.Email,
+			Address:  request.Address,
+			Phone:    request.Phone,
+			About:    request.About,
+			Image:    request.Image,
+		}
+
+		if err := repository.CreateUser(&user, tx); err != nil {
+			return exception.InternalServerException(
+				fmt.Sprintf("Error while trying to insert new Tutor with error: %s", err),
+			)
+		}
+
+		return nil
+	})
 }
 
 func UpdateUser(request *request.UserRequest, id int) {
@@ -70,6 +88,12 @@ func UpdateUser(request *request.UserRequest, id int) {
 		user.Name = request.Name
 		user.Username = request.Username
 		user.Password = request.Password
+		user.Role = request.Role
+		user.Email = request.Email
+		user.Address = request.Address
+		user.Phone = request.Phone
+		user.About = request.About
+		user.Image = request.Image
 
 		if err := repository.UpdateUser(user, tx); err != nil {
 			return exception.InternalServerException(
@@ -102,5 +126,10 @@ func MapToUserResponse(user *entities.User) (response *responses.UserResponse) {
 		Name:     user.Name,
 		Username: user.Username,
 		Role:     user.Role,
+		Email:    user.Email,
+		Address:  user.Address,
+		Phone:    user.Phone,
+		About:    user.About,
+		Image:    user.Image,
 	}
 }

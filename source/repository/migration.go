@@ -7,7 +7,6 @@ import (
 )
 
 func AutoMigrate() {
-
 	db.AutoMigrate(entities.RetriveAll()...)
 	// InsertBaseUsers()
 }

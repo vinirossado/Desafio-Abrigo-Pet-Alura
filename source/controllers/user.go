@@ -25,7 +25,6 @@ func CreateUser(c *gin.Context) {
 	utils.ReadRequestBody(c, &user)
 	service.CreateUser(&user)
 	c.Status(http.StatusOK)
-
 }
 
 func UpdateUser(c *gin.Context) {
@@ -34,9 +33,11 @@ func UpdateUser(c *gin.Context) {
 
 	id := utils.ConvertToInt(c.Params.ByName("id"))
 	service.UpdateUser(&updateUserRequest, id)
-	c.Status(http.StatusOk)
+	c.Status(http.StatusOK)
 }
 
 func DeleteUser(c *gin.Context) {
-
+	id := utils.ConvertToInt(c.Params.ByName("id"))
+	service.DeleteUser(id)
+	c.Status(http.StatusOK)
 }

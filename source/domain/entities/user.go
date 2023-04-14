@@ -10,7 +10,12 @@ import (
 type User struct {
 	gorm.Model
 	Name     string             `gorm:"column:name"`
-	Username string             `gorm:"column:username"`
+	Username string             `gorm:"column:username;unique"`
+	Email    string             `gorm:"column:email;unique"`
+	Address  string             `gorm:"column:address"`
+	Phone    string             `gorm:"column:phone"`
+	About    string             `gorm:"column:about"`
+	Image    string             `gorm:"column:image"`
 	Password string             `gorm:"column:password"`
 	Role     enumerations.Roles `gorm:"column:role"`
 }
@@ -25,7 +30,3 @@ func (u *User) BeforeCreate(scope *gorm.DB) (err error) {
 	scope.Table("users", "password", hash)
 	return nil
 }
-
-// func (u *User) TableName() string {
-// 	return "users"
-// }
