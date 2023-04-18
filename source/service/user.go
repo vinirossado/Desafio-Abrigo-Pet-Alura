@@ -82,7 +82,8 @@ func UpdateUser(request *request.UserRequest, id int) {
 
 		if err != nil {
 			return exception.NotFoundException(
-				fmt.Sprintf("User with id {%d} not found", id))
+				fmt.Sprintf("User with id {%d} was not found", id),
+			)
 		}
 
 		user.Name = request.Name

@@ -26,11 +26,13 @@ type LoginError struct {
 }
 
 type Claims struct {
+	ID   uint
 	Name string
 	Role enumerations.Roles
 }
 
 var identityKey = configuration.JWT_IDENTITY_KEY.ValueAsString()
+var GlobalClaims jwt.MapClaims
 
 func JwtMiddleware() *jwt.GinJWTMiddleware {
 
@@ -86,7 +88,7 @@ func LoginHandler(c *gin.Context) (interface{}, error) {
 	auth := request.Auth{}
 	utils.ReadRequestBody(c, &auth)
 
-	user, err := repository.FindUserByUsername(auth.Username)
+	user, err := repository.FindUserByEmail(auth.Email)
 
 	if err != nil {
 		return nil, jwt.ErrFailedAuthentication
@@ -102,14 +104,12 @@ func LoginHandler(c *gin.Context) (interface{}, error) {
 		return nil, jwt.ErrFailedAuthentication
 	}
 
-	// if err = bcrypt.CompareHashAndPassword(hashedPassword, []byte(user.Password)); err != nil {
-	// 	return nil, jwt.ErrFailedAuthentication
-	// }
-
 	return &Claims{
+		ID:   user.ID,
 		Name: user.Name,
 		Role: user.Role,
 	}, nil
+
 }
 
 func PayloadHandler(data interface{}) jwt.MapClaims {
@@ -117,6 +117,7 @@ func PayloadHandler(data interface{}) jwt.MapClaims {
 
 	return jwt.MapClaims{
 		identityKey: user.Name,
+		"id":        float64(user.ID),
 		"role":      int(user.Role),
 	}
 }
@@ -137,9 +138,9 @@ func UnauthorizedHandler(c *gin.Context, statusCode int, message string) {
 }
 
 func ExtractClaims(c *gin.Context) *Claims {
-	claims := jwt.ExtractClaims(c)
+	GlobalClaims = jwt.ExtractClaims(c)
 	return &Claims{
-		Name: claims[identityKey].(string),
-		Role: enumerations.Roles(claims["role"].(float64)),
+		Name: GlobalClaims[identityKey].(string),
+		Role: enumerations.Roles(GlobalClaims["role"].(float64)),
 	}
 }

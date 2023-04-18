@@ -1,6 +1,6 @@
 package request
 
 type Auth struct {
-	Username string `json:"username" binding:"required" example:"admin"`
-	Password string `json:"password" binding:"required" example:"admin"`
+	Email    string `json:"email" binding:"required" example:"teste@gmail.com"`
+	Password string `json:"password" binding:"required" example:"teste@100"`
 }

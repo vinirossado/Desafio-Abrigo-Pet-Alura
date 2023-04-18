@@ -16,6 +16,11 @@ func FindUserByUsername(username string, tx ...*TransactionalOperation) (*entiti
 	return user, WithTransaction(tx).Where("username = ?", username).First(user).Error
 }
 
+func FindUserByEmail(email string, tx ...*TransactionalOperation) (*entities.User, error) {
+	user := &entities.User{}
+	return user, WithTransaction(tx).Where("email = ?", email).First(user).Error
+}
+
 func ExistsUserByUsername(username string, tx ...*TransactionalOperation) bool {
 	dbResult := WithTransaction(tx).Where("username = ?", username).Find(&entities.User{})
 	return dbResult.RowsAffected > 0
