@@ -14,6 +14,11 @@ func InitRouter() *gin.Engine {
 	bindActuatorsRoutes(router)
 	bindUserRoutes(router)
 
+	err := router.Run(":8025")
+	if err != nil {
+		panic(err)
+	}
+
 	return router
 }
 
